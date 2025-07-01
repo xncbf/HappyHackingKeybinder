@@ -1,7 +1,6 @@
 import Cocoa
 import Carbon.HIToolbox
 
-@main
 class AppDelegate: NSObject, NSApplicationDelegate {
     
     var statusItem: NSStatusItem!
@@ -10,7 +9,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var isEnabled = true
     
     func applicationDidFinishLaunching(_ notification: Notification) {
+        // Ensure the app doesn't show in the dock
+        NSApp.setActivationPolicy(.accessory)
+        
         setupMenuBar()
+        
+        // Check accessibility permission first
+        if !checkAccessibilityPermission() {
+            showAccessibilityAlert()
+            // Continue setup anyway, but functionality will be limited
+        }
         
         keyboardMonitor = HappyHackingKeyboardMonitor()
         keyRemapper = KeyRemapper()
@@ -22,19 +30,24 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
         
-        if !checkAccessibilityPermission() {
-            showAccessibilityAlert()
-        } else {
-            startMonitoring()
-        }
+        startMonitoring()
     }
     
     func setupMenuBar() {
-        statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+        statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
         updateMenuBarIcon(isConnected: false)
         
         let menu = NSMenu()
-        menu.addItem(NSMenuItem(title: "Toggle", action: #selector(toggleEnabled), keyEquivalent: ""))
+        
+        let statusMenuItem = NSMenuItem(title: "Status: Enabled", action: nil, keyEquivalent: "")
+        statusMenuItem.isEnabled = false
+        menu.addItem(statusMenuItem)
+        
+        menu.addItem(NSMenuItem.separator())
+        
+        let toggleMenuItem = NSMenuItem(title: "Disable", action: #selector(toggleEnabled), keyEquivalent: "")
+        menu.addItem(toggleMenuItem)
+        
         menu.addItem(NSMenuItem.separator())
         menu.addItem(NSMenuItem(title: "Preferences...", action: #selector(showPreferences), keyEquivalent: ","))
         menu.addItem(NSMenuItem.separator())
@@ -47,7 +60,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if let button = statusItem.button {
             let config = NSImage.SymbolConfiguration(pointSize: 16, weight: .regular)
             let symbolName = isConnected && isEnabled ? "keyboard.fill" : "keyboard"
-            button.image = NSImage(systemSymbolName: symbolName, accessibilityDescription: "HappyHacking Keybinder")?.withSymbolConfiguration(config)
+            
+            if let image = NSImage(systemSymbolName: symbolName, accessibilityDescription: "HappyHacking Keybinder")?.withSymbolConfiguration(config) {
+                button.image = image
+                button.image?.isTemplate = true
+                
+                // Make inactive state more transparent
+                if !(isConnected && isEnabled) {
+                    button.alphaValue = 0.5
+                } else {
+                    button.alphaValue = 1.0
+                }
+            }
         }
     }
     
@@ -55,6 +79,21 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         isEnabled.toggle()
         keyRemapper.setEnabled(keyboardMonitor.isHappyHackingConnected && isEnabled)
         updateMenuBarIcon(isConnected: keyboardMonitor.isHappyHackingConnected)
+        updateMenuItems()
+    }
+    
+    func updateMenuItems() {
+        if let menu = statusItem.menu {
+            // Update status text
+            if let statusItem = menu.item(at: 0) {
+                statusItem.title = "Status: \(isEnabled ? "Enabled" : "Disabled")"
+            }
+            
+            // Update toggle button text
+            if let toggleItem = menu.item(at: 2) {
+                toggleItem.title = isEnabled ? "Disable" : "Enable"
+            }
+        }
     }
     
     @objc func showPreferences() {
@@ -64,8 +103,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     func checkAccessibilityPermission() -> Bool {
-        let options: NSDictionary = [kAXTrustedCheckOptionPrompt.takeRetainedValue() as NSString: false]
-        return AXIsProcessTrustedWithOptions(options)
+        // Check without prompting
+        return AXIsProcessTrusted()
     }
     
     func showAccessibilityAlert() {

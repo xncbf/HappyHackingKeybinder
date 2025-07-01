@@ -1,63 +1,63 @@
 # HappyHacking Keybinder for macOS
 
-해피해킹 키보드 전용 가벼운 키 매핑 유틸리티
+A lightweight key remapping utility exclusively for Happy Hacking keyboards
 
-## 기능
+## Features
 
-- ✅ 해피해킹 키보드 자동 감지
-- ✅ Left Control 단독 누르기 → F16 (한/영 전환)
-- ✅ 한글 입력 모드에서 ₩ → ` 변환
-- ✅ Shift + Esc → ~ (틸드)
-- ✅ 메뉴바 상태 표시
-- ✅ 다른 키보드 사용 시 자동 비활성화
+- ✅ Auto-detect Happy Hacking keyboards
+- ✅ Left Control tap → F16 (Korean/English toggle)
+- ✅ ₩ → ` in Korean input mode
+- ✅ Shift + Esc → ~ (tilde)
+- ✅ Menu bar status indicator
+- ✅ Auto-disable when using other keyboards
 
-## 지원 키보드
+## Supported Keyboards
 
 - Happy Hacking Keyboard Professional 2
 - Happy Hacking Keyboard Professional Classic
 - Happy Hacking Keyboard Professional Hybrid
 - Happy Hacking Keyboard Professional Hybrid Type-S
 
-## 시스템 요구사항
+## System Requirements
 
-- macOS 11.0 (Big Sur) 이상
-- 접근성 권한 필요
+- macOS 11.0 (Big Sur) or later
+- Accessibility permission required
 
-## 빌드 방법
+## Build Instructions
 
 ```bash
-# 프로젝트 디렉토리로 이동
+# Navigate to project directory
 cd HappyHackingKeybinder
 
-# 빌드
+# Build
 swift build -c release
 
-# 앱 실행
+# Run the app
 .build/release/HappyHackingKeybinder
 ```
 
-## 설치
+## Installation
 
-1. 빌드된 앱을 Applications 폴더로 복사
-2. 처음 실행 시 접근성 권한 요청 승인
-3. 로그인 시 자동 실행 설정 (선택사항)
+1. Copy the built app to Applications folder
+2. Grant accessibility permission on first launch
+3. Add to Login Items for auto-start (optional)
 
-## 사용법
+## Usage
 
-1. 해피해킹 키보드를 연결하면 자동으로 활성화
-2. 메뉴바 아이콘으로 상태 확인
-3. Preferences에서 개별 매핑 on/off 가능
+1. Automatically activates when Happy Hacking keyboard is connected
+2. Check status via menu bar icon
+3. Toggle individual mappings in Preferences
 
-## 문제 해결
+## Troubleshooting
 
-### 접근성 권한 문제
-시스템 환경설정 > 보안 및 개인 정보 보호 > 개인 정보 보호 > 접근성에서 앱 권한 확인
+### Accessibility Permission Issues
+Check app permissions in System Preferences > Security & Privacy > Privacy > Accessibility
 
-### 키 매핑이 작동하지 않음
-1. 메뉴바 아이콘 확인 (채워진 키보드 = 활성화)
-2. 해피해킹 키보드가 제대로 연결되었는지 확인
-3. 앱 재시작
+### Key Mappings Not Working
+1. Check menu bar icon (filled keyboard = active)
+2. Verify Happy Hacking keyboard is properly connected
+3. Restart the app
 
-## 라이선스
+## License
 
 MIT License

@@ -7,7 +7,7 @@
     <key>CFBundleExecutable</key>
     <string>HappyHackingKeybinder</string>
     <key>CFBundleIdentifier</key>
-    <string>com.happyhacking.keybinder</string>
+    <string>com.xncbf.HappyHackingKeybinder</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundleName</key>

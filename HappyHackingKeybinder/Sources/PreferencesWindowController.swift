@@ -42,14 +42,14 @@ class PreferencesWindowController: NSWindowController {
         mappingsStack.spacing = 10
         
         let controlCheckbox = createCheckbox(
-            title: "Left Control → F16 (한/영 전환)",
+            title: "Left Control → F16 (Korean/English toggle)",
             action: #selector(controlMappingChanged(_:)),
             isChecked: controlToF16Enabled
         )
         mappingsStack.addArrangedSubview(controlCheckbox)
         
         let wonCheckbox = createCheckbox(
-            title: "₩ → ` (한글 입력 모드에서만)",
+            title: "₩ → ` (Korean input mode only)",
             action: #selector(wonMappingChanged(_:)),
             isChecked: wonToBacktickEnabled
         )

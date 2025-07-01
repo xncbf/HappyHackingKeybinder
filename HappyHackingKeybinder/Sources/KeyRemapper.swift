@@ -6,10 +6,15 @@ class KeyRemapper {
     private var eventTap: CFMachPort?
     private var runLoopSource: CFRunLoopSource?
     private var isEnabled = false
+    private var permissionRequired = false
     
     private var lastControlPressTime: Date?
     private var isControlModifierUsed = false
     private let controlKeyTimeout: TimeInterval = 0.2  // 200ms
+    
+    func needsAccessibilityPermission() -> Bool {
+        return permissionRequired
+    }
     
     func setEnabled(_ enabled: Bool) {
         isEnabled = enabled
@@ -41,7 +46,8 @@ class KeyRemapper {
             },
             userInfo: Unmanaged.passUnretained(self).toOpaque()
         ) else {
-            print("Failed to create event tap")
+            print("Failed to create event tap - may need accessibility permission")
+            permissionRequired = true
             return
         }
         
