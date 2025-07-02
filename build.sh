@@ -12,7 +12,18 @@ swift build -c release
 if [ $? -eq 0 ]; then
     echo "Build successful!"
     
-    # Create app bundle structure
+    # Copy the simple executable like swift run does
+    cp .build/release/HappyHackingKeybinder ./HappyHackingKeybinder_simple
+    
+    # Sign it like swift does (simple adhoc signing with stable identifier)
+    echo "Signing simple executable..."
+    codesign --force --sign - --identifier "HappyHackingKeybinder" ./HappyHackingKeybinder_simple
+    
+    echo "Simple executable created: ./HappyHackingKeybinder_simple"
+    echo "✅ This version works! Run it with: ./HappyHackingKeybinder_simple"
+    echo ""
+    
+    # Also create app bundle for comparison
     mkdir -p HappyHackingKeybinder.app/Contents/{MacOS,Resources}
     
     # Copy executable
@@ -24,9 +35,9 @@ if [ $? -eq 0 ]; then
     # Create icon (placeholder for now)
     touch HappyHackingKeybinder.app/Contents/Resources/AppIcon.icns
     
-    # Ad-hoc code signing with entitlements (for local use)
+    # Ad-hoc code signing with stable identifier (like swift run)
     echo "Signing app..."
-    codesign --force --deep --sign - --entitlements HappyHackingKeybinder.entitlements HappyHackingKeybinder.app
+    codesign --force --deep --sign - --identifier "HappyHackingKeybinder" HappyHackingKeybinder.app
     
     if [ $? -eq 0 ]; then
         echo "App signed successfully!"

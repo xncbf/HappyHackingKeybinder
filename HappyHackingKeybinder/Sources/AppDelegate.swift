@@ -13,9 +13,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         setupMenuBar()
         
-        // Check accessibility permission first
-        if !checkAccessibilityPermission() {
-            showAccessibilityAlert()
+        // Check both accessibility and input monitoring permissions
+        let hasAccessibility = checkAccessibilityPermission()
+        let hasInputMonitoring = checkInputMonitoringPermission()
+        
+        if !hasAccessibility || !hasInputMonitoring {
+            showPermissionAlert(hasAccessibility: hasAccessibility, hasInputMonitoring: hasInputMonitoring)
             // Continue setup anyway, but functionality will be limited
         }
         
@@ -99,10 +102,24 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return AXIsProcessTrusted()
     }
     
-    func showAccessibilityAlert() {
+    func checkInputMonitoringPermission() -> Bool {
+        // Check input monitoring permission
+        return CGPreflightListenEventAccess()
+    }
+    
+    func showPermissionAlert(hasAccessibility: Bool, hasInputMonitoring: Bool) {
         let alert = NSAlert()
         alert.messageText = "Permissions Required"
-        alert.informativeText = "HappyHacking Keybinder needs permissions to monitor and remap keys.\n\nPlease grant permission in:\n1. System Preferences > Security & Privacy > Privacy > Accessibility\n2. System Preferences > Security & Privacy > Privacy > Input Monitoring"
+        
+        var message = "HappyHacking Keybinder needs permissions to monitor and remap keys.\n\nPlease grant permission in System Preferences:\n"
+        if !hasAccessibility {
+            message += "• Security & Privacy > Privacy > Accessibility\n"
+        }
+        if !hasInputMonitoring {
+            message += "• Security & Privacy > Privacy > Input Monitoring\n"
+        }
+        
+        alert.informativeText = message
         alert.alertStyle = .warning
         alert.addButton(withTitle: "Open System Preferences")
         alert.addButton(withTitle: "Continue Anyway")

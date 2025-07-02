@@ -37,6 +37,7 @@ class KeyRemapper {
     private func createEventTap() {
         let eventMask = (1 << CGEventType.keyDown.rawValue) | (1 << CGEventType.keyUp.rawValue) | (1 << CGEventType.flagsChanged.rawValue)
         
+        // 먼저 listenOnly로 시도해서 입력 모니터링 권한 트리거
         guard let tap = CGEvent.tapCreate(
             tap: .cgSessionEventTap,
             place: .headInsertEventTap,
