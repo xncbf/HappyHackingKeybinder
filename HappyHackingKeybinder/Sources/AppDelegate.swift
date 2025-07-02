@@ -101,15 +101,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     func showAccessibilityAlert() {
         let alert = NSAlert()
-        alert.messageText = "Accessibility Permission Required"
-        alert.informativeText = "HappyHacking Keybinder needs accessibility permission to monitor and remap keys.\n\nPlease grant permission in System Preferences > Security & Privacy > Privacy > Accessibility."
+        alert.messageText = "Permissions Required"
+        alert.informativeText = "HappyHacking Keybinder needs permissions to monitor and remap keys.\n\nPlease grant permission in:\n1. System Preferences > Security & Privacy > Privacy > Accessibility\n2. System Preferences > Security & Privacy > Privacy > Input Monitoring"
         alert.alertStyle = .warning
         alert.addButton(withTitle: "Open System Preferences")
+        alert.addButton(withTitle: "Continue Anyway")
         alert.addButton(withTitle: "Quit")
         
-        if alert.runModal() == .alertFirstButtonReturn {
+        let response = alert.runModal()
+        if response == .alertFirstButtonReturn {
             NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility")!)
-        } else {
+        } else if response == .alertThirdButtonReturn {
             NSApplication.shared.terminate(nil)
         }
     }

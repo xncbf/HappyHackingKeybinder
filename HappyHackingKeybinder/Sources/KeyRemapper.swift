@@ -18,6 +18,7 @@ class KeyRemapper {
     
     func setEnabled(_ enabled: Bool) {
         isEnabled = enabled
+        print("KeyRemapper setEnabled: \(enabled)")
         
         if enabled && eventTap == nil {
             createEventTap()
@@ -56,6 +57,7 @@ class KeyRemapper {
         CGEvent.tapEnable(tap: tap, enable: true)
         
         eventTap = tap
+        print("Event tap created successfully")
     }
     
     private func removeEventTap() {
@@ -73,6 +75,9 @@ class KeyRemapper {
         guard isEnabled else {
             return Unmanaged.passRetained(event)
         }
+        
+        let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
+        print("Event received - Type: \(type.rawValue), KeyCode: \(keyCode)")
         
         switch type {
         case .flagsChanged:
@@ -99,14 +104,17 @@ class KeyRemapper {
                    Date().timeIntervalSince(pressTime) < controlKeyTimeout,
                    !isControlModifierUsed {
                     
-                    if let f16Event = CGEvent(keyboardEventSource: nil, virtualKey: 106, keyDown: true) {
-                        f16Event.post(tap: .cghidEventTap)
-                        
+                    // F16 키 이벤트를 별도로 생성해서 전송
+                    DispatchQueue.main.async {
+                        if let f16Event = CGEvent(keyboardEventSource: nil, virtualKey: 106, keyDown: true) {
+                            f16Event.post(tap: .cghidEventTap)
+                        }
                         if let f16UpEvent = CGEvent(keyboardEventSource: nil, virtualKey: 106, keyDown: false) {
                             f16UpEvent.post(tap: .cghidEventTap)
                         }
                     }
                     
+                    // 원본 컨트롤 release 이벤트를 차단
                     return nil
                 }
                 lastControlPressTime = nil
@@ -131,9 +139,21 @@ class KeyRemapper {
             }
         }
         
+        // 한글 입력 모드에서 백틱(`) 키를 백틱으로 유지 (₩ 방지)
+        if keyCode == 50 && isKoreanInputSource() {  // ` key in Korean mode
+            // 백틱 문자를 직접 입력
+            if let backtickString = "`".data(using: .utf8) {
+                let source = CGEventSource(stateID: .hidSystemState)
+                if let textEvent = CGEvent(keyboardEventSource: source, virtualKey: 0, keyDown: true) {
+                    textEvent.keyboardSetUnicodeString(stringLength: 1, unicodeString: [0x0060]) // 백틱 유니코드
+                    return Unmanaged.passRetained(textEvent)
+                }
+            }
+        }
+        
         if keyCode == 93 && isKoreanInputSource() {  // ₩ key in Korean mode
             if let backtickEvent = CGEvent(keyboardEventSource: nil, virtualKey: 50, keyDown: true) {
-                backtickEvent.flags = []
+                backtickEvent.flags = flags
                 return Unmanaged.passRetained(backtickEvent)
             }
         }
@@ -152,9 +172,14 @@ class KeyRemapper {
             }
         }
         
+        // 한글 입력 모드에서 백틱(`) keyUp은 무시 (keyDown에서 처리됨)
+        if keyCode == 50 && isKoreanInputSource() {  // ` key in Korean mode
+            return nil // keyUp 이벤트 차단
+        }
+        
         if keyCode == 93 && isKoreanInputSource() {  // ₩ key in Korean mode
             if let backtickEvent = CGEvent(keyboardEventSource: nil, virtualKey: 50, keyDown: false) {
-                backtickEvent.flags = []
+                backtickEvent.flags = flags
                 return Unmanaged.passRetained(backtickEvent)
             }
         }
