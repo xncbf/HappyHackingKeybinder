@@ -11,6 +11,7 @@ class KeyRemapper {
     private var lastControlPressTime: Date?
     private var isControlModifierUsed = false
     private let controlKeyTimeout: TimeInterval = 0.2  // 200ms
+    private var healthCheckTimer: Timer?
     
     func needsAccessibilityPermission() -> Bool {
         return permissionRequired
@@ -57,10 +58,17 @@ class KeyRemapper {
         CGEvent.tapEnable(tap: tap, enable: true)
         
         eventTap = tap
-        print("Event tap created successfully")
+        
+        // 건강 상태 체크 타이머 시작 (30초마다)
+        healthCheckTimer = Timer.scheduledTimer(withTimeInterval: 30.0, repeats: true) { [weak self] _ in
+            self?.performHealthCheck()
+        }
     }
     
     private func removeEventTap() {
+        healthCheckTimer?.invalidate()
+        healthCheckTimer = nil
+        
         if let tap = eventTap {
             CGEvent.tapEnable(tap: tap, enable: false)
             if let source = runLoopSource {
@@ -72,12 +80,17 @@ class KeyRemapper {
     }
     
     private func handleEvent(proxy: CGEventTapProxy, type: CGEventType, event: CGEvent) -> Unmanaged<CGEvent>? {
-        guard isEnabled else {
+        // 이벤트 탭이 비활성화된 경우 재활성화
+        if type == .tapDisabledByTimeout || type == .tapDisabledByUserInput {
+            if let tap = eventTap {
+                CGEvent.tapEnable(tap: tap, enable: true)
+            }
             return Unmanaged.passRetained(event)
         }
         
-        let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
-        print("Event received - Type: \(type.rawValue), KeyCode: \(keyCode)")
+        guard isEnabled else {
+            return Unmanaged.passRetained(event)
+        }
         
         switch type {
         case .flagsChanged:
@@ -104,11 +117,10 @@ class KeyRemapper {
                    Date().timeIntervalSince(pressTime) < controlKeyTimeout,
                    !isControlModifierUsed {
                     
-                    // F16 키 이벤트를 별도로 생성해서 전송
-                    DispatchQueue.main.async {
-                        if let f16Event = CGEvent(keyboardEventSource: nil, virtualKey: 106, keyDown: true) {
-                            f16Event.post(tap: .cghidEventTap)
-                        }
+                    // F16 키 이벤트를 직접 생성해서 전송
+                    if let f16Event = CGEvent(keyboardEventSource: nil, virtualKey: 106, keyDown: true) {
+                        f16Event.post(tap: .cghidEventTap)
+                        
                         if let f16UpEvent = CGEvent(keyboardEventSource: nil, virtualKey: 106, keyDown: false) {
                             f16UpEvent.post(tap: .cghidEventTap)
                         }
@@ -142,12 +154,10 @@ class KeyRemapper {
         // 한글 입력 모드에서 백틱(`) 키를 백틱으로 유지 (₩ 방지)
         if keyCode == 50 && isKoreanInputSource() {  // ` key in Korean mode
             // 백틱 문자를 직접 입력
-            if let backtickString = "`".data(using: .utf8) {
-                let source = CGEventSource(stateID: .hidSystemState)
-                if let textEvent = CGEvent(keyboardEventSource: source, virtualKey: 0, keyDown: true) {
-                    textEvent.keyboardSetUnicodeString(stringLength: 1, unicodeString: [0x0060]) // 백틱 유니코드
-                    return Unmanaged.passRetained(textEvent)
-                }
+            let source = CGEventSource(stateID: .hidSystemState)
+            if let textEvent = CGEvent(keyboardEventSource: source, virtualKey: 0, keyDown: true) {
+                textEvent.keyboardSetUnicodeString(stringLength: 1, unicodeString: [0x0060]) // 백틱 유니코드
+                return Unmanaged.passRetained(textEvent)
             }
         }
         
@@ -199,5 +209,27 @@ class KeyRemapper {
         let sourceID = Unmanaged<CFString>.fromOpaque(sourceIDPtr).takeUnretainedValue() as String
         
         return sourceID.contains("Korean") || sourceID.contains("2-Set") || sourceID.contains("3-Set")
+    }
+    
+    private func performHealthCheck() {
+        guard let tap = eventTap else { return }
+        
+        // 이벤트 탭이 여전히 활성화되어 있는지 확인
+        if !CGEvent.tapIsEnabled(tap: tap) {
+            print("Event tap was disabled, re-enabling...")
+            CGEvent.tapEnable(tap: tap, enable: true)
+        }
+        
+        // 컨트롤 키 상태 리셋 (스턱 방지)
+        if let lastPress = lastControlPressTime,
+           Date().timeIntervalSince(lastPress) > 5.0 {  // 5초 이상 경과시
+            lastControlPressTime = nil
+            isControlModifierUsed = false
+        }
+    }
+    
+    deinit {
+        removeEventTap()
+        lastControlPressTime = nil
     }
 }

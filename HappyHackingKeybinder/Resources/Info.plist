@@ -26,5 +26,9 @@
     <true/>
     <key>NSHumanReadableCopyright</key>
     <string>Copyright © 2024 HappyHacking Keybinder. All rights reserved.</string>
+    <key>NSAppleEventsUsageDescription</key>
+    <string>This app needs to monitor keyboard events to provide key remapping functionality for Happy Hacking Keyboards.</string>
+    <key>NSAccessibilityUsageDescription</key>
+    <string>This app needs accessibility access to monitor and remap keyboard inputs for all connected keyboards.</string>
 </dict>
 </plist>

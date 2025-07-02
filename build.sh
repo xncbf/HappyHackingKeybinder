@@ -24,6 +24,16 @@ if [ $? -eq 0 ]; then
     # Create icon (placeholder for now)
     touch HappyHackingKeybinder.app/Contents/Resources/AppIcon.icns
     
+    # Ad-hoc code signing with entitlements (for local use)
+    echo "Signing app..."
+    codesign --force --deep --sign - --entitlements HappyHackingKeybinder.entitlements HappyHackingKeybinder.app
+    
+    if [ $? -eq 0 ]; then
+        echo "App signed successfully!"
+    else
+        echo "Warning: Code signing failed, but app bundle created"
+    fi
+    
     echo "App bundle created: HappyHackingKeybinder.app"
     echo ""
     echo "To install:"
