@@ -4,7 +4,6 @@ import Carbon.HIToolbox
 class AppDelegate: NSObject, NSApplicationDelegate {
     
     var statusItem: NSStatusItem!
-    var keyboardMonitor: HappyHackingKeyboardMonitor!
     var keyRemapper: KeyRemapper!
     var isEnabled = true
     
@@ -20,22 +19,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             // Continue setup anyway, but functionality will be limited
         }
         
-        keyboardMonitor = HappyHackingKeyboardMonitor()
         keyRemapper = KeyRemapper()
-        
-        keyboardMonitor.onKeyboardStatusChanged = { [weak self] isConnected in
-            DispatchQueue.main.async {
-                self?.updateMenuBarIcon(isConnected: isConnected)
-                self?.keyRemapper.setEnabled(isConnected && (self?.isEnabled ?? false))
-            }
-        }
+        keyRemapper.setEnabled(isEnabled)
         
         startMonitoring()
     }
     
     func setupMenuBar() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
-        updateMenuBarIcon(isConnected: false)
+        updateMenuBarIcon()
         
         let menu = NSMenu()
         
@@ -56,17 +48,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         statusItem.menu = menu
     }
     
-    func updateMenuBarIcon(isConnected: Bool) {
+    func updateMenuBarIcon() {
         if let button = statusItem.button {
             let config = NSImage.SymbolConfiguration(pointSize: 16, weight: .regular)
-            let symbolName = isConnected && isEnabled ? "keyboard.fill" : "keyboard"
+            let symbolName = isEnabled ? "keyboard.fill" : "keyboard"
             
             if let image = NSImage(systemSymbolName: symbolName, accessibilityDescription: "HappyHacking Keybinder")?.withSymbolConfiguration(config) {
                 button.image = image
                 button.image?.isTemplate = true
                 
                 // Make inactive state more transparent
-                if !(isConnected && isEnabled) {
+                if !isEnabled {
                     button.alphaValue = 0.5
                 } else {
                     button.alphaValue = 1.0
@@ -77,8 +69,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     @objc func toggleEnabled() {
         isEnabled.toggle()
-        keyRemapper.setEnabled(keyboardMonitor.isHappyHackingConnected && isEnabled)
-        updateMenuBarIcon(isConnected: keyboardMonitor.isHappyHackingConnected)
+        keyRemapper.setEnabled(isEnabled)
+        updateMenuBarIcon()
         updateMenuItems()
     }
     
@@ -123,7 +115,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     func startMonitoring() {
-        keyboardMonitor.startMonitoring()
         keyRemapper.startRemapping()
     }
 }
