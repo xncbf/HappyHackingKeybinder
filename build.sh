@@ -15,9 +15,9 @@ if [ $? -eq 0 ]; then
     # Copy the simple executable like swift run does
     cp .build/release/HappyHackingKeybinder ./HappyHackingKeybinder_simple
     
-    # Sign it like swift does (simple adhoc signing with stable identifier)
+    # Sign it like swift does (simple adhoc signing with entitlements and stable identifier)
     echo "Signing simple executable..."
-    codesign --force --sign - --identifier "HappyHackingKeybinder" ./HappyHackingKeybinder_simple
+    codesign --force --sign - --entitlements simple.entitlements --identifier "HappyHackingKeybinder" ./HappyHackingKeybinder_simple
     
     echo "Simple executable created: ./HappyHackingKeybinder_simple"
     echo "✅ This version works! Run it with: ./HappyHackingKeybinder_simple"
@@ -35,9 +35,9 @@ if [ $? -eq 0 ]; then
     # Create icon (placeholder for now)
     touch HappyHackingKeybinder.app/Contents/Resources/AppIcon.icns
     
-    # Ad-hoc code signing with stable identifier (like swift run)
+    # Ad-hoc code signing with entitlements and stable identifier (like swift run)
     echo "Signing app..."
-    codesign --force --deep --sign - --identifier "HappyHackingKeybinder" HappyHackingKeybinder.app
+    codesign --force --deep --sign - --entitlements HappyHackingKeybinder.entitlements --identifier "HappyHackingKeybinder" HappyHackingKeybinder.app
     
     if [ $? -eq 0 ]; then
         echo "App signed successfully!"

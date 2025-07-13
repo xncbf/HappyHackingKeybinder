@@ -26,5 +26,20 @@
     <true/>
     <key>NSHumanReadableCopyright</key>
     <string>Copyright © 2024 HappyHacking Keybinder. All rights reserved.</string>
+    <key>NSPrivacyAccessedAPITypeReasons</key>
+    <array>
+        <dict>
+            <key>NSPrivacyAccessedAPIType</key>
+            <string>NSPrivacyAccessedAPICategoryInputMonitoring</string>
+            <key>NSPrivacyAccessedAPITypeReasons</key>
+            <array>
+                <string>3B52.1</string>
+            </array>
+        </dict>
+    </array>
+    <key>NSSystemAdministrationUsageDescription</key>
+    <string>HappyHacking Keybinder needs accessibility permission to monitor and remap keyboard inputs for Happy Hacking Keyboard devices.</string>
+    <key>NSInputMonitoringUsageDescription</key>
+    <string>HappyHacking Keybinder needs input monitoring permission to detect and remap key presses from your Happy Hacking Keyboard.</string>
 </dict>
 </plist>
