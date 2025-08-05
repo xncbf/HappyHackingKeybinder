@@ -32,8 +32,13 @@ if [ $? -eq 0 ]; then
     # Copy Info.plist
     cp HappyHackingKeybinder/Resources/Info.plist HappyHackingKeybinder.app/Contents/
     
-    # Create icon (placeholder for now)
-    touch HappyHackingKeybinder.app/Contents/Resources/AppIcon.icns
+    # Copy icon file
+    if [ -f "HappyHackingKeybinder/Resources/AppIcon.icns" ]; then
+        cp HappyHackingKeybinder/Resources/AppIcon.icns HappyHackingKeybinder.app/Contents/Resources/
+    else
+        echo "Warning: AppIcon.icns not found"
+        touch HappyHackingKeybinder.app/Contents/Resources/AppIcon.icns
+    fi
     
     # Try to find a developer certificate first
     DEVELOPER_ID=$(security find-identity -v -p codesigning | grep "Developer ID Application" | head -1 | awk '{print $2}')

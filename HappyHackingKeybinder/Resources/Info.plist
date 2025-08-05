@@ -26,5 +26,7 @@
     <true/>
     <key>NSHumanReadableCopyright</key>
     <string>Copyright © 2024 HappyHacking Keybinder. All rights reserved.</string>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
 </dict>
 </plist>
