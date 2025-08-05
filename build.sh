@@ -17,7 +17,7 @@ if [ $? -eq 0 ]; then
     
     # Sign it like swift does (simple adhoc signing with stable identifier)
     echo "Signing simple executable..."
-    codesign --force --sign - --identifier "HappyHackingKeybinder" ./HappyHackingKeybinder_simple
+    codesign --force --sign - --identifier "com.happyhacking.keybinder" ./HappyHackingKeybinder_simple
     
     echo "Simple executable created: ./HappyHackingKeybinder_simple"
     echo "✅ This version works! Run it with: ./HappyHackingKeybinder_simple"
@@ -35,9 +35,23 @@ if [ $? -eq 0 ]; then
     # Create icon (placeholder for now)
     touch HappyHackingKeybinder.app/Contents/Resources/AppIcon.icns
     
-    # Ad-hoc code signing with stable identifier (like swift run)
-    echo "Signing app..."
-    codesign --force --deep --sign - --identifier "HappyHackingKeybinder" HappyHackingKeybinder.app
+    # Try to find a developer certificate first
+    DEVELOPER_ID=$(security find-identity -v -p codesigning | grep "Developer ID Application" | head -1 | awk '{print $2}')
+    
+    if [ -z "$DEVELOPER_ID" ]; then
+        # Try Apple Development certificate
+        DEVELOPER_ID=$(security find-identity -v -p codesigning | grep "Apple Development" | head -1 | awk '{print $2}')
+    fi
+    
+    if [ -z "$DEVELOPER_ID" ]; then
+        # Fall back to ad-hoc signing
+        echo "No developer certificate found, using ad-hoc signing..."
+        echo "Note: This may cause permission issues! Consider getting a developer certificate."
+        codesign --force --deep --sign - --identifier "com.happyhacking.keybinder" --entitlements HappyHackingKeybinder.entitlements HappyHackingKeybinder.app
+    else
+        echo "Signing app with developer certificate: $DEVELOPER_ID"
+        codesign --force --deep --sign "$DEVELOPER_ID" --identifier "com.happyhacking.keybinder" --entitlements HappyHackingKeybinder.entitlements HappyHackingKeybinder.app
+    fi
     
     if [ $? -eq 0 ]; then
         echo "App signed successfully!"
