@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-HappyHacking Keybinder is a macOS keyboard remapping utility written in Swift. It intercepts and modifies keyboard events using CGEvent API to provide custom key mappings. The app runs as a menu bar application without a dock icon.
+HHKB Key Binder is a macOS keyboard remapping utility written in Swift. It intercepts and modifies keyboard events using CGEvent API to provide custom key mappings. The app runs as a menu bar application without a dock icon.
 
 ## Key Mappings
 

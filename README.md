@@ -1,7 +1,7 @@
 <div align="center">
-  <img src="icon.png" alt="HappyHacking Keybinder" width="256" height="256">
+  <img src="icon.png" alt="HHKB Key Binder" width="256" height="256">
   
-  # HappyHacking Keybinder for macOS
+  # HHKB Key Binder for macOS
   
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
   [![macOS](https://img.shields.io/badge/macOS-11.0+-blue.svg)](https://www.apple.com/macos/)
@@ -77,11 +77,11 @@ cp -r HappyHackingKeybinder.app /Applications/
 2. **손쉬운 사용 권한 부여**
    - 시스템 환경설정 → 보안 및 개인 정보 보호 → 개인 정보 보호 → 손쉬운 사용
    - 좌측 하단 자물쇠 클릭 (잠금 해제)
-   - HappyHacking Keybinder 체크 ✓
+   - HHKB Key Binder 체크 ✓
 
 3. **입력 모니터링 권한 부여** (요청 시)
    - 시스템 환경설정 → 보안 및 개인 정보 보호 → 개인 정보 보호 → 입력 모니터링
-   - HappyHacking Keybinder 체크 ✓
+   - HHKB Key Binder 체크 ✓
 
 ## 💡 사용 방법
 
@@ -113,7 +113,7 @@ cp -r HappyHackingKeybinder.app /Applications/
 
 1. **메뉴바에 아이콘이 안 보일 때**
    - 앱이 실행 중인지 확인
-   - Activity Monitor에서 HappyHackingKeybinder 검색
+   - Activity Monitor에서 HHKB Key Binder 검색
 
 2. **키 매핑이 작동하지 않을 때**
    - 메뉴바 아이콘이 활성화 상태인지 확인
