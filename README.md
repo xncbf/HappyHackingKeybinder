@@ -1,20 +1,42 @@
-# HappyHacking Keybinder for macOS
+<div align="center">
+  <img src="icon.png" alt="HappyHacking Keybinder" width="128" height="128">
+  
+  # HappyHacking Keybinder for macOS
+  
+  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+  [![macOS](https://img.shields.io/badge/macOS-11.0+-blue.svg)](https://www.apple.com/macos/)
+  [![Swift](https://img.shields.io/badge/Swift-5.0+-orange.svg)](https://swift.org/)
+  
+  맥북 내장 키보드, USB 키보드, 블루투스 키보드 - 모두 지원합니다!
+</div>
 
-macOS용 키보드 리매핑 유틸리티 - 모든 키보드에서 작동합니다!
+## ✨ 주요 기능
 
-## 주요 기능
+<table>
+<tr>
+<td>
 
-- ✅ **모든 키보드** 지원 (USB, 블루투스, 내장 키보드)
-- ✅ 왼쪽 Control 탭 → F16 (한/영 전환)
-- ✅ 한글 입력 중 ` → ` (₩ 대신 백틱 유지)
-- ✅ Shift + Esc → ~ (틸드)
-- ✅ 메뉴바 상태 표시
-- ✅ 활성화/비활성화 토글
+### 🎮 키 리매핑
+- 왼쪽 Control 탭 → F16 (한/영 전환)
+- 한글 입력 중 ` → ` (₩ 대신 백틱 유지)
+- Shift + Esc → ~ (틸드)
 
-## 시스템 요구사항
+</td>
+<td>
 
-- macOS 11.0 (Big Sur) 이상
-- 손쉬운 사용 권한 필요
+### 🛠 편의 기능
+- 메뉴바 상태 표시
+- 활성화/비활성화 토글
+- 모든 키보드 지원
+
+</td>
+</tr>
+</table>
+
+## 📋 시스템 요구사항
+
+- **macOS** 11.0 (Big Sur) 이상
+- **권한**: 손쉬운 사용 (Accessibility)
 
 ## 🚀 간단 설치 가이드
 
@@ -40,7 +62,9 @@ cd HappyHackingKeybinder
 cp -r HappyHackingKeybinder.app /Applications/
 ```
 
-### 2. 권한 설정 (중요! ⚠️)
+### 2. 권한 설정
+
+> ⚠️ **중요**: 권한을 허용하지 않으면 앱이 작동하지 않습니다!
 
 앱을 처음 실행하면 권한을 요청합니다:
 
@@ -72,7 +96,7 @@ cp -r HappyHackingKeybinder.app /Applications/
    - **백틱 입력**: 한글 모드에서도 ` 키 그대로 입력
    - **틸드 입력**: Shift + Esc
 
-## 🔧 문제 해결
+## 🔧 트러블슈팅
 
 ### 권한 토글이 안 될 때
 
@@ -124,3 +148,9 @@ MIT License
 ## 🤝 기여하기
 
 버그 리포트와 기능 제안은 [Issues](https://github.com/xncbf/HappyHackingKeybinder/issues)에 남겨주세요!
+
+---
+
+<div align="center">
+  Made with ❤️ for Happy Hacking Keyboard enthusiasts
+</div>
