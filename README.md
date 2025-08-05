@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="icon.png" alt="HappyHacking Keybinder" width="128" height="128">
+  <img src="icon.png" alt="HappyHacking Keybinder" width="256" height="256">
   
   # HappyHacking Keybinder for macOS
   
