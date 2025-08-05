@@ -16,8 +16,6 @@
     <false/>
     <key>com.apple.security.automation.apple-events</key>
     <true/>
-    <key>com.apple.security.device.usb</key>
-    <true/>
     <key>com.apple.security.get-task-allow</key>
     <true/>
     <key>com.apple.security.cs.allow-unsigned-executable-memory</key>

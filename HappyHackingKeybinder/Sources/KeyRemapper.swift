@@ -37,6 +37,8 @@ class KeyRemapper {
     private func createEventTap() {
         let eventMask = (1 << CGEventType.keyDown.rawValue) | (1 << CGEventType.keyUp.rawValue) | (1 << CGEventType.flagsChanged.rawValue)
         
+        print("Creating event tap...")
+        
         // 먼저 listenOnly로 시도해서 입력 모니터링 권한 트리거
         guard let tap = CGEvent.tapCreate(
             tap: .cgSessionEventTap,
@@ -59,6 +61,7 @@ class KeyRemapper {
         CGEvent.tapEnable(tap: tap, enable: true)
         
         eventTap = tap
+        print("Event tap created and enabled successfully")
         
         // 건강 상태 체크 타이머 시작 (30초마다)
         healthCheckTimer = Timer.scheduledTimer(withTimeInterval: 30.0, repeats: true) { [weak self] _ in
@@ -109,22 +112,45 @@ class KeyRemapper {
         let flags = event.flags
         let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
         
+        // Debug: Print all flag changes
+        print("FlagsChanged - KeyCode: \(keyCode), Flags: \(flags.rawValue)")
+        
         if keyCode == 59 {  // Left Control
             if flags.contains(.maskControl) {
+                print("Control key pressed")
                 lastControlPressTime = Date()
                 isControlModifierUsed = false
             } else {
+                print("Control key released")
                 if let pressTime = lastControlPressTime,
-                   Date().timeIntervalSince(pressTime) < controlKeyTimeout,
-                   !isControlModifierUsed {
+                    Date().timeIntervalSince(pressTime) < controlKeyTimeout,
+                    !isControlModifierUsed {
                     
                     // F16 키 이벤트를 직접 생성해서 전송
-                    if let f16Event = CGEvent(keyboardEventSource: nil, virtualKey: 106, keyDown: true) {
-                        f16Event.post(tap: .cghidEventTap)
+                    print("Control tap detected, sending F16")
+                    
+                    // Create event source with HID system state
+                    let source = CGEventSource(stateID: .hidSystemState)
+                    
+                    // F16 keycode is 0x6A (106 decimal) - verified from multiple sources
+                    let f16KeyCode: CGKeyCode = 0x6A
+                    
+                    // Create F16 down event
+                    if let f16Down = CGEvent(keyboardEventSource: source, virtualKey: f16KeyCode, keyDown: true) {
+                        // Post to session event tap (this makes it visible to more apps including event viewers)
+                        f16Down.post(tap: .cgSessionEventTap)
+                        print("F16 down event posted (keyCode: \(f16KeyCode) = 0x\(String(format: "%02X", f16KeyCode)))")
                         
-                        if let f16UpEvent = CGEvent(keyboardEventSource: nil, virtualKey: 106, keyDown: false) {
-                            f16UpEvent.post(tap: .cghidEventTap)
+                        // Small delay to simulate real key press
+                        usleep(10000) // 10ms
+                        
+                        // Create and post F16 up event
+                        if let f16Up = CGEvent(keyboardEventSource: source, virtualKey: f16KeyCode, keyDown: false) {
+                            f16Up.post(tap: .cgSessionEventTap)
+                            print("F16 up event posted")
                         }
+                    } else {
+                        print("Failed to create F16 event")
                     }
                     
                     // 원본 컨트롤 release 이벤트를 차단
