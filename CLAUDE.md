@@ -24,6 +24,9 @@ HHKB Key Binder is a macOS keyboard remapping utility written in Swift. It inter
 
 # Run simple executable directly (for testing)
 ./HappyHackingKeybinder_simple
+
+# Fix macOS Gatekeeper security warnings
+./fix_gatekeeper.sh
 ```
 
 ## Architecture
@@ -62,6 +65,7 @@ The app uses CGEvent tap at session level (`CGSessionEventTap`) with head insert
 - F16 key binding may not work if event tap is disabled by system
 - Event tap can be disabled by timeout or user input - app includes recovery mechanism
 - Requires app restart after granting permissions
+- macOS Gatekeeper warnings due to ad-hoc code signing (see README_GATEKEEPER.md for solutions)
 
 ## Debugging
 

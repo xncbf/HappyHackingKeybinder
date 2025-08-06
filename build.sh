@@ -51,11 +51,23 @@ if [ $? -eq 0 ]; then
     if [ -z "$DEVELOPER_ID" ]; then
         # Fall back to ad-hoc signing
         echo "No developer certificate found, using ad-hoc signing..."
-        echo "Note: This may cause permission issues! Consider getting a developer certificate."
+        echo "⚠️  This will trigger macOS Gatekeeper warnings!"
+        echo "📖 See README_GATEKEEPER.md for solutions to bypass the warning"
         codesign --force --deep --sign - --identifier "com.happyhacking.keybinder" --entitlements HappyHackingKeybinder.entitlements HappyHackingKeybinder.app
+        
+        # Remove quarantine attribute that may have been set during build
+        echo "Removing quarantine attribute..."
+        xattr -d com.apple.quarantine HappyHackingKeybinder.app 2>/dev/null || true
     else
         echo "Signing app with developer certificate: $DEVELOPER_ID"
         codesign --force --deep --sign "$DEVELOPER_ID" --identifier "com.happyhacking.keybinder" --entitlements HappyHackingKeybinder.entitlements HappyHackingKeybinder.app
+        
+        # For developer-signed apps, we can try notarization if credentials exist
+        if command -v xcrun >/dev/null 2>&1; then
+            echo "Developer certificate detected. Consider notarizing for distribution:"
+            echo "xcrun notarytool submit HappyHackingKeybinder.app --keychain-profile \"notarytool-profile\" --wait"
+            echo "xcrun stapler staple HappyHackingKeybinder.app"
+        fi
     fi
     
     if [ $? -eq 0 ]; then
